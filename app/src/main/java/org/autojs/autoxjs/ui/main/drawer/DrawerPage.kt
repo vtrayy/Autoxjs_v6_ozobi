@@ -113,6 +113,7 @@ import org.autojs.autoxjs.autojs.AutoJs
 import org.autojs.autoxjs.devplugin.DevPlugin
 import org.autojs.autoxjs.external.foreground.ForegroundService
 import org.autojs.autoxjs.network.ozobi.KtorDocsService
+import org.autojs.autoxjs.network.ozobi.DocsServiceAddress
 import org.autojs.autoxjs.tool.AccessibilityServiceTool
 import org.autojs.autoxjs.tool.WifiTool
 import org.autojs.autoxjs.ui.build.MyTextField
@@ -137,14 +138,12 @@ private const val FEEDBACK_ADDRESS = "https://github.com/aiselp/AutoX/issues"
 private const val DONATION_PAGE_ADDRESS = "https://ozobiozobi.github.io/Autoxjs_v6_ozobi_some_info/"
 private const val V1_DOC_COMMUNITY_ADDRESS = "http://bmxwzsq.kesug.com/v1"
 private const val OZOBI_SUBFIX = "_ozobi"
-private const val DOCS_SERVICE_PORT = "16868"
 private const val MODIFICATION_SINCE = "2024-10-01"
 
 private var alwaysTryToConnectState = false
 private var isFirstTime = true
 private lateinit var devicePolicyManager: DevicePolicyManager
 private lateinit var componentName: ComponentName
-private val ozobiShizuku = OzobiShizuku()
 private val modification_since_timestamp = Ozobi.dateTimeToTimestamp(MODIFICATION_SINCE,"yyyy-MM-dd")
 //
 @Composable
@@ -248,8 +247,7 @@ fun CommunityWebsite(context:Context){
 fun DonationDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
-    imageResId1: Int,
-    imageResId2: Int,
+    imageResId: Int,
     contentText: String,
     linkText: String,
     linkUrl: String
@@ -274,7 +272,7 @@ fun DonationDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "$MODIFICATION_SINCE - 能走多远，且看诸位",
+                        text = "$MODIFICATION_SINCE ~ 能走多远，且看诸位",
                         style = TextStyle(color = Color(R.color.primary))
                     )
                     Spacer(modifier = Modifier.height(3.dp))
@@ -285,16 +283,7 @@ fun DonationDialog(
                     Spacer(modifier = Modifier.height(3.dp))
                     // 显示图片
                     Image(
-                        painter = painterResource(id = imageResId1),
-                        contentDescription = "Dialog Image",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Image(
-                        painter = painterResource(id = imageResId2),
+                        painter = painterResource(id = imageResId),
                         contentDescription = "Dialog Image",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
@@ -355,9 +344,8 @@ fun ShowDonationDialog(onDismiss:()->Unit){
         onDismissRequest = {
             onDismiss()
             showDialog = false},
-        imageResId1 = R.drawable.donation_qr_ozobi,
-        imageResId2 = R.drawable.donation_qr_qq,
-        contentText = "为魔改充电(推荐加入QQ群)\n备注可以指定充电的开发者、版本或功能\n(没有备注则默认充电时的最新版)",
+        imageResId = R.drawable.qrcode,
+        contentText = "为魔改充电(需要加入QQ群)\n备注可以指定充电的开发者、版本或功能\n(没有备注则默认充电时的最新版)",
         linkText = "github充电记录页面",
         linkUrl = DONATION_PAGE_ADDRESS
     )
@@ -710,14 +698,14 @@ private fun ConnectComputerSwitch() {
 private fun ShizukuSwitch(){
     val context = LocalContext.current
     var isShizukuActive by remember {
-        mutableStateOf(ozobiShizuku.checkPermission())
+        mutableStateOf(OzobiShizuku().checkPermission())
     }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 // 用户返回应用时触发的操作
-                isShizukuActive = ozobiShizuku.checkPermission()
+                isShizukuActive = OzobiShizuku().checkPermission()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -725,9 +713,6 @@ private fun ShizukuSwitch(){
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-    LaunchedEffect(key1 = Unit, block = {
-        isShizukuActive = ozobiShizuku.checkPermission()
-    })
     SwitchItem(
         icon = {
             MyIcon(
@@ -1555,7 +1540,7 @@ private fun docsServiceSwitch() {
             .getBoolean(context.getString(R.string.ozobi_key_docs_service), false)
         mutableStateOf(default)
     }
-    val ipAddress = getWifiIPv4(context)+":$DOCS_SERVICE_PORT"
+    DocsServiceAddress.ip = getWifiIPv4(context)
     SwitchItem(
         icon = {
             MyIcon(
@@ -1579,12 +1564,12 @@ private fun docsServiceSwitch() {
                     .item(
                         R.id.docs_service_address,
                         R.drawable.ic_web_black_48dp,
-                        ipAddress
+                        DocsServiceAddress.ip+":"+DocsServiceAddress.port
                     )
                     .title("文档服务已开启")
                     .build()
                 DialogUtils.showDialog(detailsDialog)
-                ClipboardUtil.setClip(context, ipAddress)
+                ClipboardUtil.setClip(context, DocsServiceAddress.ip+":"+DocsServiceAddress.port)
             }else{
                 val startIntent = Intent(context, KtorDocsService::class.java)
                 context.stopService(startIntent)
@@ -1644,6 +1629,16 @@ fun detailsDialog(context: Context){
             R.id.qq_communication_group,
             R.drawable.ic_group_black_48dp,
             "QQ交流群: "+context.resources.getString(R.string.qq_communication_group)
+        )
+        .item(
+            R.id.modification_detail,
+            R.drawable.ic_edit_black_48dp,
+            "<=== 65811->65812 ===>"
+        )
+        .item(
+            R.id.modification_detail,
+            R.drawable.ic_ali_log,
+            "(BMX)更新: v1 文档 ui 控件使用方法"
         )
         .item(
             R.id.modification_detail,

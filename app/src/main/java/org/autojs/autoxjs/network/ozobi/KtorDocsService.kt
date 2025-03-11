@@ -58,7 +58,7 @@ class KtorDocsService: Service() {
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Docs Service")
-            .setContentText("Server is running")
+            .setContentText(DocsServiceAddress.ip+":"+DocsServiceAddress.port)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .build()
     }

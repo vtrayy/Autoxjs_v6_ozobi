@@ -283,7 +283,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name="com.stardust.auojs.inrt.App"
+        android:name="com.stardust.autojs.inrt.App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
@@ -294,14 +294,14 @@
         tools:replace="android:label, android:allowBackup"
         tools:targetApi="m">
         <activity
-            android:name="com.stardust.auojs.inrt.LoginActivity"
+            android:name="com.stardust.autojs.inrt.LoginActivity"
             android:label="@string/title_activity_login" />
 
-        <activity android:name="com.stardust.auojs.inrt.LogActivity" />
-        <activity android:name="com.stardust.auojs.inrt.FeatureActivity" />
+        <activity android:name="com.stardust.autojs.inrt.LogActivity" />
+        <activity android:name="com.stardust.autojs.inrt.FeatureActivity" />
 
         <activity
-            android:name="com.stardust.auojs.inrt.SplashActivity"
+            android:name="com.stardust.autojs.inrt.SplashActivity"
             android:clearTaskOnLaunch="true"
             android:finishOnTaskLaunch="true"
             android:theme="@style/ScriptTheme.Splash"
@@ -311,7 +311,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.stardust.auojs.inrt.SettingsActivity" />
+        <activity android:name="com.stardust.autojs.inrt.SettingsActivity" />
 
         <service
             android:name="com.stardust.notification.NotificationListenerService"
@@ -322,10 +322,17 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
+        <receiver android:name="com.stardust.autojs.inrt.ozobi.bootstart.BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.stardust.auojs.inrt.fileprovider"
+            android:authorities="com.stardust.autojs.inrt.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

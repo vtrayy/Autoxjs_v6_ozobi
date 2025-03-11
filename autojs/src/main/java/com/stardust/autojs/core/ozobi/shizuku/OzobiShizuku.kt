@@ -42,16 +42,6 @@ class OzobiShizuku {
             }
         }
     }
-//    val userServiceArgs: UserServiceArgs = UserServiceArgs(
-//        ComponentName(
-//            BuildConfig.APPLICATION_ID,
-//            UserService::class.java.name
-//        )
-//    )
-//        .daemon(false)
-//        .processNameSuffix("adb_service")
-//        .debuggable(BuildConfig.DEBUG)
-//        .version(BuildConfig.VERSION_CODE)
     fun checkPermission(): Boolean {
         var result = false
         try {

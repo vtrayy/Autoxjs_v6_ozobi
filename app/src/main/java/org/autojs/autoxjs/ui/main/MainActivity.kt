@@ -1,5 +1,6 @@
 package org.autojs.autoxjs.ui.main
 
+//import com.aiselp.autojs.codeeditor.EditActivity
 import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
@@ -28,7 +29,6 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
-//import com.aiselp.autojs.codeeditor.EditActivity
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -91,7 +91,6 @@ class MainActivity : FragmentActivity() {
             if (DrawOverlaysPermission.isCanDrawOverlays(this)) FloatyWindowManger.showCircularMenu()
             else Pref.setFloatingMenuShown(false)
         }
-
         
         val serviceConnection =
             MessengerServiceConnection(Looper.getMainLooper())
@@ -142,7 +141,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    fun isServiceRunning(context: Context, serviceName: String): Boolean {
+    private fun isServiceRunning(context: Context, serviceName: String): Boolean {
         val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (service in manager.getRunningServices(Int.MAX_VALUE)) {
             if (serviceName == service.service.className) {
